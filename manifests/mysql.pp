@@ -14,10 +14,10 @@ class newrelic_plugin::mysql(
   $newrelic_license_key = undef,
   $plugin_path = '/usr/local/newrelic/mysql',
   $enabled = true,
-) {
+) inherits newrelic_plugin::params {
 
   # Install java
-  ensure_packages( ['openjdk-7-jre-headless',] )
+  ensure_packages( [$::newrelic_plugin::params::java_jre_package, ] )
 
   archive { 'newrelic_plugin_mysql':
     ensure              => present,
@@ -59,17 +59,21 @@ class newrelic_plugin::mysql(
     mode   => '0755',
   }
 
-  file {"/usr/local/newrelic/mysql/etc/init.d/debian.patch": 
-    source => "puppet:///modules/newrelic_plugin/mysql/debian.patch", 
-    notify => Exec["apply-newrelic-mysql-init-patch"], 
-  } 
+  file { '/usr/local/newrelic/mysql/etc/init.d/newrelic-mysql-plugin.redhat':
+    mode   => '0755',
+  }
 
-  exec {"apply-newrelic-mysql-init-patch":
+  file {'/usr/local/newrelic/mysql/etc/init.d/debian.patch':
+    source => 'puppet:///modules/newrelic_plugin/mysql/debian.patch',
+    notify => Exec['apply-newrelic-mysql-init-patch'],
+  }
+
+  exec {'apply-newrelic-mysql-init-patch':
     cwd         => '/usr/local/newrelic/mysql/etc/init.d/',
     path        => '/usr/local/bin:/usr/bin:/bin',
-    command     => "patch newrelic-mysql-plugin.debian -p0 < debian.patch",
+    command     => 'patch newrelic-mysql-plugin.debian -p0 < debian.patch',
     refreshonly => true,
-  } 
+  }
 
   file { '/etc/default/newrelic-mysql-plugin':
     content => template('newrelic_plugin/mysql/init_default_params')

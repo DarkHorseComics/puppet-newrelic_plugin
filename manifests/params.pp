@@ -25,7 +25,7 @@ class newrelic_plugin::params {
       $java_jre_package        = 'openjdk-7-jre-headless'
     }
     default: {
-      fail("Unsupported OS family")
+      fail('Unsupported OS family')
     }
   }
 }

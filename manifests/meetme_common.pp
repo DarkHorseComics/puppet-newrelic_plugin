@@ -12,7 +12,7 @@ class newrelic_plugin::meetme_common(
   include concat::setup
 
   # Ensure necessary python packages are installed
-  ensure_resource('class', 'python', { 
+  ensure_resource('class', 'python', {
     pip        => true,
     dev        => true,
     virtualenv => true,
