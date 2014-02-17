@@ -1,0 +1,17 @@
+newrelic_plugins
+
+This module installs and configures New Relic server monitoring
+ plugins, using the MeetMe python newrelic agent
+
+License
+-------
+GPLv2
+
+Contact
+-------
+oskars@darkhorse.com
+
+Support
+-------
+
+Please log tickets and issues at http://gitub.com/DarkHorseComics/puppet-newrelic_plugins

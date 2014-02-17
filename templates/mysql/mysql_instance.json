@@ -1,0 +1,7 @@
+[
+    {
+		"name" : "<%= @mysql_name %>",
+		"host" : "<%= @host_name %>",
+		"metrics" : "status,newrelic",
+    },
+]

@@ -1,0 +1,11 @@
+  mongodb:
+    name: <%= @host_name %>
+    host: <%= @host %>
+    port: <%= @port %>
+    admin_username: <%= @user %>
+    admin_password: <%= @password%>
+    databases:
+    <% @databases.map do |db| -%>
+  <%= "- #{db}" %>
+    <% end -%>
+
