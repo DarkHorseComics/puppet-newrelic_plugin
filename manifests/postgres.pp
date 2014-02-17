@@ -9,7 +9,7 @@ class newrelic_plugin::postgres (
   $dbname     = undef,
   $superuser  = false,
   $enable     = true,
-) {
+) inherits newrelic_plugin::params {
 
   if $enable {
     concat::fragment { 'newrelic_plugin_postgres':
@@ -18,13 +18,13 @@ class newrelic_plugin::postgres (
     }
   }
 
-  package { 'libpq-dev':
+  package { $::newrelic_plugin::params::postgres_lib_package:
     ensure => present,
   }
 
-  python::pip{ 'psycopg2':
+  python::pip{ $::newrelic_plugin::params::postgres_lib_package:
     ensure  => present,
-    require => Package['libpq-dev'],
+    require => Package[$::newrelic_plugin::params::postgres_lib_package],
   }
 
 }
