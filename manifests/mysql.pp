@@ -49,9 +49,14 @@ class newrelic_plugin::mysql(
     content => template('newrelic_plugin/mysql/newrelic.properties'),
   }
 
+  $init_script_source = $::osfamily ? {
+    'Debian' => "${plugin_path}/etc/init.d/newrelic-mysql-plugin.debian",
+    'RedHat' => "${plugin_path}/etc/init.d/newrelic-mysql-plugin.rh",
+  }
+
   file { '/etc/init.d/newrelic-mysql-plugin':
     ensure => link,
-    target => "${plugin_path}/etc/init.d/newrelic-mysql-plugin.debian",
+    target => $init_script_source,
   }
 
   # Ensure init script is executable
@@ -63,16 +68,19 @@ class newrelic_plugin::mysql(
     mode   => '0755',
   }
 
-  file {'/usr/local/newrelic/mysql/etc/init.d/debian.patch':
-    source => 'puppet:///modules/newrelic_plugin/mysql/debian.patch',
-    notify => Exec['apply-newrelic-mysql-init-patch'],
-  }
+  # Patch init script for debian
+  if $::osfamily == 'Debian' {
+    file {'/usr/local/newrelic/mysql/etc/init.d/debian.patch':
+      source => 'puppet:///modules/newrelic_plugin/mysql/debian.patch',
+      notify => Exec['apply-newrelic-mysql-init-patch'],
+    }
 
-  exec {'apply-newrelic-mysql-init-patch':
-    cwd         => '/usr/local/newrelic/mysql/etc/init.d/',
-    path        => '/usr/local/bin:/usr/bin:/bin',
-    command     => 'patch newrelic-mysql-plugin.debian -p0 < debian.patch',
-    refreshonly => true,
+    exec {'apply-newrelic-mysql-init-patch':
+      cwd         => '/usr/local/newrelic/mysql/etc/init.d/',
+      path        => '/usr/local/bin:/usr/bin:/bin',
+      command     => 'patch newrelic-mysql-plugin.debian -p0 < debian.patch',
+      refreshonly => true,
+    }
   }
 
   file { '/etc/default/newrelic-mysql-plugin':
